@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>MCQ Question Builder - {{ exam.title }}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8", "background-dark": "#111621" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-3">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-3 text-primary">
+                    <span class="material-symbols-outlined text-3xl">terminal</span>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em]">
+                        ExamSystem</h2>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors"
+                        href="/faculty/dashboard">Dashboard</a>
+                    <span class="text-primary text-sm font-bold border-b-2 border-primary py-1">Questions</span>
+                </nav>
+            </div>
+            <div class="flex flex-1 justify-end gap-4 items-center">
+                {% if not is_locked %}
+                <form method="POST" action="/faculty/exams/{{ exam.id }}/publish"
+                    onsubmit="return confirm('Publish this exam? Questions cannot be edited after publishing.');">
+                    <button type="submit"
+                        class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-emerald-600 text-white text-sm font-bold leading-normal transition-all hover:bg-emerald-700 shadow-sm">
+                        Publish Exam
+                    </button>
+                </form>
+                {% endif %}
+                <a href="/faculty/dashboard"
+                    class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal transition-all hover:bg-slate-200">
+                    Back to Dashboard
+                </a>
+            </div>
+        </header>
+        <div class="flex h-full grow">
+            <!-- Sidebar: Question Navigator -->
+            <aside
+                class="w-72 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col sticky top-[65px] h-[calc(100vh-65px)]">
+                <div class="p-6">
+                    <h3 class="text-slate-900 dark:text-slate-100 font-bold mb-1">Question Navigator</h3>
+                    <p class="text-slate-500 text-xs mb-6">{{ exam.title }}</p>
+                    <div class="grid grid-cols-4 gap-3 mb-8">
+                        {% for q in questions %}
+                        <a href="#q-{{ loop.index }}"
+                            class="w-12 h-12 rounded-lg flex items-center justify-center font-bold bg-primary text-white shadow-md shadow-primary/20">{{
+                            loop.index }}</a>
+                        {% endfor %}
+                        {% if not is_locked %}
+                        <a href="#add-question"
+                            class="w-12 h-12 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-400 hover:border-primary hover:text-primary transition-all">
+                            <span class="material-symbols-outlined">add</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-auto space-y-4">
+                        <div
+                            class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Questions
+                                    Added</span>
+                                <span class="text-xs font-bold text-primary">{{ questions|length }}</span>
+                            </div>
+                        </div>
+                        {% if is_locked %}
+                        <div
+                            class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium">
+                            <span class="material-symbols-outlined text-sm align-middle mr-1">lock</span>
+                            Exam is published. Questions are locked.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+            <!-- Main Content -->
+            <main class="flex-1 p-8 lg:p-12 overflow-y-auto bg-background-light dark:bg-background-dark">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h1 class="text-3xl font-black text-slate-900 dark:text-white leading-tight">MCQ Question
+                                Builder</h1>
+                            <p class="text-slate-500 mt-1">{{ exam.title }} — {{ questions|length }} question(s) added
+                            </p>
+                        </div>
+                    </div>
+                    {% if error %}
+                    <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-medium">{{
+                        error }}</div>
+                    {% endif %}
+                    {% if success %}
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm font-medium">
+                        {{ success }}</div>
+                    {% endif %}
+                    <!-- Existing Questions -->
+                    {% for q in questions %}
+                    <section id="q-{{ loop.index }}"
+                        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <div
+                            class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="bg-primary/10 text-primary text-sm font-bold px-3 py-1 rounded-full uppercase tracking-wider">Question
+                                    {{ loop.index }}</span>
+                                <span class="text-xs font-bold text-slate-500">{{ q.marks }} Point(s)</span>
+                            </div>
+                            {% if not is_locked %}
+                            <div class="flex items-center gap-2">
+                                <form method="POST" action="/faculty/exams/{{ exam.id }}/questions/{{ q.id }}/delete"
+                                    onsubmit="return confirm('Delete this question?');">
+                                    <button type="submit"
+                                        class="p-2 text-slate-400 hover:text-red-500 transition-colors"><span
+                                            class="material-symbols-outlined">delete</span></button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-8">
+                            {% if is_locked %}
+                            <!-- View only mode -->
+                            <p class="text-lg font-semibold mb-6">{{ q.question_text }}</p>
+                            <div class="space-y-3">
+                                {% set options = {'A': q.option_a, 'B': q.option_b, 'C': q.option_c, 'D': q.option_d} %}
+                                {% for letter, text in options.items() %}
+                                <div
+                                    class="flex items-center gap-4 p-4 rounded-xl border-2 {% if letter == q.correct_option %}border-primary bg-primary/5{% else %}border-slate-100{% endif %}">
+                                    <div
+                                        class="w-8 h-8 rounded-full border-2 {% if letter == q.correct_option %}border-primary bg-primary text-white{% else %}border-slate-300 text-slate-400{% endif %} flex items-center justify-center font-bold">
+                                        {{ letter }}</div>
+                                    <span class="text-base font-medium">{{ text }}</span>
+                                    {% if letter == q.correct_option %}
+                                    <span class="material-symbols-outlined text-primary ml-auto">check_circle</span>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <!-- Edit mode -->
+                            <form method="POST" action="/faculty/exams/{{ exam.id }}/questions/{{ q.id }}/edit"
+                                class="space-y-6">
+                                <div>
+                                    <label
+                                        class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Question
+                                        Statement</label>
+                                    <textarea name="question_text" required
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-primary focus:border-primary p-4"
+                                        rows="3">{{ q.question_text }}</textarea>
+                                </div>
+                                <div class="space-y-4">
+                                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Answer
+                                        Options</label>
+                                    {% set options_data = [('A', q.option_a), ('B', q.option_b), ('C', q.option_c),
+                                    ('D', q.option_d)] %}
+                                    {% for letter, text in options_data %}
+                                    <div class="flex items-center gap-4">
+                                        <label
+                                            class="w-8 h-8 rounded-full border-2 {% if letter == q.correct_option %}border-primary bg-primary text-white{% else %}border-slate-300 text-slate-400{% endif %} flex items-center justify-center font-bold cursor-pointer">
+                                            <input type="radio" name="correct_option" value="{{ letter }}"
+                                                class="hidden" {% if letter==q.correct_option %}checked{% endif %}
+                                                required />
+                                            {{ letter }}
+                                        </label>
+                                        <input type="text" name="option_{{ letter|lower }}" value="{{ text }}" required
+                                            class="flex-1 border-none bg-slate-100 dark:bg-slate-800 rounded-lg focus:ring-1 focus:ring-primary py-3 px-4" />
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <label class="text-sm font-bold text-slate-700">Marks:</label>
+                                    <input type="number" name="marks" value="{{ q.marks }}" min="1" required
+                                        class="w-20 rounded-lg border-slate-200 text-center font-bold" />
+                                </div>
+                                <button type="submit"
+                                    class="px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary/90">Update
+                                    Question</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </section>
+                    {% endfor %}
+                    <!-- Add New Question Form -->
+                    {% if not is_locked %}
+                    <section id="add-question"
+                        class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border-2 border-dashed border-primary/30 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 dark:border-slate-800 bg-primary/5">
+                            <h3 class="font-bold text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined">add_circle</span>
+                                Add New Question
+                            </h3>
+                        </div>
+                        <div class="p-8">
+                            <form method="POST" action="/faculty/exams/{{ exam.id }}/questions/add" class="space-y-6">
+                                <div>
+                                    <label
+                                        class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Question
+                                        Statement</label>
+                                    <textarea name="question_text" required
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-primary focus:border-primary p-4"
+                                        rows="3" placeholder="Enter your MCQ question here..."></textarea>
+                                </div>
+                                <div class="space-y-4">
+                                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Answer
+                                        Options <span
+                                            class="text-[10px] text-slate-400 ml-2 uppercase tracking-widest">Select the
+                                            correct answer</span></label>
+                                    {% for letter in ['A', 'B', 'C', 'D'] %}
+                                    <div class="flex items-center gap-4">
+                                        <label
+                                            class="w-8 h-8 rounded-full border-2 border-slate-300 text-slate-400 flex items-center justify-center font-bold cursor-pointer hover:border-primary hover:text-primary transition-all">
+                                            <input type="radio" name="correct_option" value="{{ letter }}"
+                                                class="hidden" {% if loop.first %}checked{% endif %} required />
+                                            {{ letter }}
+                                        </label>
+                                        <input type="text" name="option_{{ letter|lower }}" required
+                                            class="flex-1 border-none bg-slate-100 dark:bg-slate-800 rounded-lg focus:ring-1 focus:ring-primary py-3 px-4"
+                                            placeholder="Enter option {{ letter }}" />
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <label class="text-sm font-bold text-slate-700">Marks:</label>
+                                    <input type="number" name="marks" value="1" min="1" required
+                                        class="w-20 rounded-lg border-slate-200 text-center font-bold" />
+                                </div>
+                                <button type="submit"
+                                    class="flex items-center bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                                    <span class="material-symbols-outlined mr-2">add_box</span>
+                                    Add Question
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        // Highlight selected radio buttons
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const form = this.closest('form');
+                form.querySelectorAll('label[class*="rounded-full"]').forEach(label => {
+                    label.className = label.className.replace(/border-primary bg-primary text-white/g, 'border-slate-300 text-slate-400');
+                });
+                this.parentElement.className = this.parentElement.className.replace(/border-slate-300 text-slate-400/g, 'border-primary bg-primary text-white');
+            });
+        });
+    </script>
+</body>
+
+</html>

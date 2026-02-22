@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Available Exams - Technical Examination System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light min-h-screen flex flex-col font-display text-slate-900">
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-primary text-white p-1.5 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">school</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Technical Examination System</h1>
+                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Student Portal</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex flex-col items-end">
+                <span class="text-sm font-semibold">{{ student.student_name }}</span>
+                <span class="text-xs text-slate-500">{{ student.registration_number }}</span>
+            </div>
+            <div
+                class="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">person</span>
+            </div>
+            <a href="/logout"
+                class="flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <span class="material-symbols-outlined text-slate-500">logout</span>
+            </a>
+        </div>
+    </header>
+    <main class="flex-grow max-w-4xl mx-auto w-full p-6 md:p-10">
+        <div class="mb-8">
+            <h2 class="text-3xl font-black tracking-tight mb-2">Available Examinations</h2>
+            <p class="text-slate-500">Select an exam to view instructions and begin your attempt.</p>
+        </div>
+        {% if exams %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for exam in exams %}
+            <div
+                class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">assignment</span>
+                        </div>
+                        {% if exam.already_submitted %}
+                        <span
+                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                            <span class="size-1.5 rounded-full bg-emerald-500"></span> COMPLETED
+                        </span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                            <span class="size-1.5 rounded-full bg-blue-500"></span> ACTIVE
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">{{ exam.title }}</h3>
+                    <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ exam.description or "No description
+                        provided." }}</p>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="flex items-center gap-2 text-sm text-slate-600">
+                            <span class="material-symbols-outlined text-primary text-lg">schedule</span>
+                            {{ exam.duration_minutes }} min
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-slate-600">
+                            <span class="material-symbols-outlined text-primary text-lg">grade</span>
+                            {{ exam.total_marks }} marks
+                        </div>
+                    </div>
+                    {% if exam.already_submitted %}
+                    <a href="/student/exam/{{ exam.id }}/result"
+                        class="block w-full text-center py-3 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors">
+                        View Result
+                    </a>
+                    {% else %}
+                    <a href="/student/exam/{{ exam.id }}/instructions"
+                        class="block w-full text-center py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                        Start Exam
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">assignment_late</span>
+            <h3 class="text-xl font-bold text-slate-600 mb-2">No Active Exams</h3>
+            <p class="text-slate-400">There are no examinations available at this time. Please check back later.</p>
+        </div>
+        {% endif %}
+    </main>
+    <footer class="py-6 text-center text-slate-400 text-xs">
+        © 2024 Technical Examination System. All rights reserved.
+    </footer>
+</body>
+
+</html>

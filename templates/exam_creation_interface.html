@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Create New Exam - Technical Examination System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+    <!-- Top Navigation Bar -->
+    <header
+        class="sticky top-0 z-50 w-full bg-white dark:bg-background-dark border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-2xl">school</span>
+                    </div>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">EduExam Pro</h1>
+                </div>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="/faculty/dashboard">Dashboard</a>
+                    <span class="text-sm font-bold text-primary border-b-2 border-primary py-5">Exams</span>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-lg">person</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb & Title -->
+        <nav class="flex mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+            <a class="hover:text-primary" href="/faculty/dashboard">Dashboard</a>
+            <span class="mx-2 text-slate-300">/</span>
+            <span class="text-slate-900 dark:text-slate-100">Create New Exam</span>
+        </nav>
+        <div class="mb-10">
+            <h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Create New Examination
+            </h2>
+            <p class="text-slate-600 dark:text-slate-400">Define the core parameters and schedule for your upcoming
+                assessment.</p>
+        </div>
+        {% if error %}
+        <div class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-medium">{{ error }}
+        </div>
+        {% endif %}
+        <!-- Form Card -->
+        <div
+            class="bg-white dark:bg-background-dark/50 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-8">
+            <form action="/faculty/exams/create" class="space-y-8" method="POST">
+                <!-- Section 1: Identity -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-full">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                            for="title">Exam Title</label>
+                        <input
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-slate-400"
+                            id="title" name="title" required placeholder="e.g. Advanced Algorithms Midterm"
+                            type="text" />
+                    </div>
+                </div>
+                <!-- Section 2: Description -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                        for="description">Description / Instructions</label>
+                    <textarea
+                        class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                        id="description" name="description"
+                        placeholder="Enter specific instructions for students appearing for this exam..."
+                        rows="4"></textarea>
+                </div>
+                <hr class="border-slate-100 dark:border-slate-800" />
+                <!-- Section 3: Timing & Scoring -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                            for="duration_minutes">Duration (Minutes)</label>
+                        <div class="relative">
+                            <input
+                                class="w-full px-4 py-3 pl-10 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                id="duration_minutes" name="duration_minutes" required placeholder="e.g. 90"
+                                type="number" min="1" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">timer</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Recommended: 60 - 180 min</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                            for="total_marks">Total Marks</label>
+                        <div class="relative">
+                            <input
+                                class="w-full px-4 py-3 pl-10 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                id="total_marks" name="total_marks" required placeholder="e.g. 100" type="number"
+                                min="1" />
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">grade</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Section 4: Schedule -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                            for="start_time">Start Date & Time</label>
+                        <input
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            id="start_time" name="start_time" required type="datetime-local" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                            for="end_time">End Date & Time</label>
+                        <input
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                            id="end_time" name="end_time" required type="datetime-local" />
+                    </div>
+                </div>
+                <!-- Action Bar -->
+                <div
+                    class="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <a href="/faculty/dashboard"
+                        class="order-2 sm:order-1 px-6 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                        Discard &amp; Exit
+                    </a>
+                    <div class="order-1 sm:order-2 flex items-center gap-3 w-full sm:w-auto">
+                        <button name="action" value="save"
+                            class="flex-1 sm:flex-none px-8 py-3 text-sm font-bold text-white bg-primary hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/25 flex items-center justify-center gap-2 group transition-all"
+                            type="submit">
+                            Save & Add Questions
+                            <span
+                                class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Help Info -->
+        <div class="mt-8 flex items-start gap-3 p-4 bg-primary/5 border border-primary/10 rounded-lg">
+            <span class="material-symbols-outlined text-primary">info</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <span class="font-bold text-primary">Pro Tip:</span> After saving, you'll be redirected to add MCQ
+                questions. Ensure the total marks matches the sum of individual question marks.
+            </p>
+        </div>
+    </main>
+    <footer class="py-10 border-t border-slate-200 dark:border-slate-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-slate-500">© 2024 Technical Examination System. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

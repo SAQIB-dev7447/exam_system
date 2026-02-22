@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Faculty Registration - Technical Examination System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#2463eb",
+                    "background-light": "#f6f6f8",
+                    "background-dark": "#111621",
+                },
+                fontFamily: {
+                    "display": ["Inter", "sans-serif"]
+                },
+                borderRadius: {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+                },
+            },
+        },
+    }
+</script>
+</head>
+<body class="bg-background-light min-h-screen flex flex-col font-display">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 px-6 py-4 bg-white">
+<div class="flex items-center gap-3 text-slate-900">
+<div class="text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">terminal</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Technical Examination System</h2>
+</div>
+<a href="/" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">
+<span class="truncate">Back to Login</span>
+</a>
+</header>
+<main class="flex-grow flex items-center justify-center p-6">
+<div class="max-w-md w-full bg-white rounded-xl overflow-hidden shadow-lg border border-slate-200">
+<div class="p-8">
+<div class="mb-8 text-center">
+<span class="material-symbols-outlined text-5xl text-primary mb-4">person_add</span>
+<h2 class="text-2xl font-bold text-slate-900 mb-2">Register Faculty Account</h2>
+<p class="text-slate-500">Create your faculty account to manage examinations.</p>
+</div>
+{% if error %}
+<div class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-medium">{{ error }}</div>
+{% endif %}
+{% if success %}
+<div class="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm font-medium">{{ success }}</div>
+{% endif %}
+<form method="POST" action="/register/faculty" class="space-y-5">
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+<input name="full_name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="Dr. John Smith" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
+<input name="username" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="faculty_username" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+<input name="password" required minlength="4" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="••••••••" type="password"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+<input name="department" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 placeholder:text-slate-400" placeholder="Computer Science" type="text"/>
+</div>
+<button class="w-full bg-primary text-white font-bold py-3.5 rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2" type="submit">
+Create Account
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+</div>
+</div>
+</main>
+<footer class="p-6 text-center text-slate-400 text-xs">
+<p>© 2024 Online Technical Examination System. All rights reserved.</p>
+</footer>
+</body></html>

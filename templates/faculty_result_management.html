@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Results Management - {{ exam.title }}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8", "background-dark": "#111621" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Side Navigation -->
+        <aside
+            class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden md:flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">school</span>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight leading-none">EduTech</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Faculty Portal</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 px-4 py-4 space-y-1">
+                <a href="/faculty/dashboard"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span><span
+                        class="text-sm font-medium">Overview</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors"
+                    href="#">
+                    <span class="material-symbols-outlined">bar_chart</span><span
+                        class="text-sm font-semibold">Results</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-3 p-2">
+                    <div class="size-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-bold truncate">{{ faculty.full_name }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ faculty.department or 'Faculty' }}</p>
+                    </div>
+                    <a href="/logout" class="ml-auto text-slate-400 hover:text-slate-600"><span
+                            class="material-symbols-outlined text-[20px]">logout</span></a>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header
+                class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <a href="/faculty/dashboard" class="text-slate-400 hover:text-slate-600 transition"><span
+                            class="material-symbols-outlined">arrow_back</span></a>
+                    <div>
+                        <h2 class="text-lg font-bold">Results Management</h2>
+                        <p class="text-xs text-slate-500">{{ exam.title }}</p>
+                    </div>
+                </div>
+                <a href="/faculty/exams/{{ exam.id }}/results/csv"
+                    class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold text-sm hover:bg-emerald-700 transition">
+                    <span class="material-symbols-outlined text-lg">download</span> Export CSV
+                </a>
+            </header>
+            <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+                <!-- Quick Stats -->
+                <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-sm font-medium text-slate-500 mb-1">Total Students</p>
+                        <h3 class="text-3xl font-bold">{{ total_students }}</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-sm font-medium text-slate-500 mb-1">Average Score</p>
+                        <h3 class="text-3xl font-bold">{{ avg_score }}%</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-sm font-medium text-slate-500 mb-1">Pass Rate</p>
+                        <h3 class="text-3xl font-bold text-emerald-600">{{ pass_rate }}%</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-sm font-medium text-slate-500 mb-1">Passed / Failed</p>
+                        <h3 class="text-3xl font-bold"><span class="text-emerald-600">{{ passed_count }}</span> / <span
+                                class="text-red-600">{{ failed_count }}</span></h3>
+                    </div>
+                </section>
+                <!-- Filters -->
+                <section
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div
+                        class="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-4 justify-between">
+                        <h3 class="text-lg font-bold">Student Results</h3>
+                        <div class="flex items-center gap-3">
+                            <form method="GET" action="/faculty/exams/{{ exam.id }}/results"
+                                class="flex items-center gap-3">
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                                    <input type="text" name="search" value="{{ search }}"
+                                        placeholder="Search student..."
+                                        class="pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm focus:ring-primary focus:border-primary outline-none" />
+                                </div>
+                                <select name="status"
+                                    class="py-2 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm focus:ring-primary focus:border-primary outline-none"
+                                    onchange="this.form.submit()">
+                                    <option value="">All Status</option>
+                                    <option value="passed" {% if status_filter=='passed' %}selected{% endif %}>Passed
+                                    </option>
+                                    <option value="failed" {% if status_filter=='failed' %}selected{% endif %}>Failed
+                                    </option>
+                                </select>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-sm">Filter</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50">
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        #</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Student Name</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Reg. Number</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Score</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Percentage</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Submitted</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                {% for s in students %}
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                    <td class="px-6 py-4 text-sm font-medium text-slate-400">{{ loop.index }}</td>
+                                    <td class="px-6 py-4 text-sm font-bold">{{ s.student_name }}</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600">{{ s.registration_number }}</td>
+                                    <td class="px-6 py-4 text-sm font-bold">{{ s.score or 0 }}/{{ s.total_marks or 0 }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm font-bold">{{ "%.1f"|format(s.percentage or 0) }}%</td>
+                                    <td class="px-6 py-4">
+                                        {% if s.percentage and s.percentage >= pass_percentage %}
+                                        <span
+                                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                                            <span class="size-1.5 rounded-full bg-emerald-500"></span> PASSED
+                                        </span>
+                                        {% else %}
+                                        <span
+                                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700">
+                                            <span class="size-1.5 rounded-full bg-red-500"></span> FAILED
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-500">{{ s.submitted_at[:19] if
+                                        s.submitted_at else '--' }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if not students %}
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center text-slate-400">No results to display.
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

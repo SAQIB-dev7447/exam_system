@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>System Login - Technical Examination System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
+    <!-- Top Navigation Bar -->
+    <header
+        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-4 bg-white dark:bg-slate-900">
+        <div class="flex items-center gap-3 text-slate-900 dark:text-slate-100">
+            <div class="text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl">terminal</span>
+            </div>
+            <h2 class="text-lg font-bold leading-tight tracking-tight">Technical Examination System</h2>
+        </div>
+        <div class="flex gap-3">
+            <a href="/register/faculty"
+                class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-200 transition-colors">
+                <span class="truncate">Faculty Registration</span>
+            </a>
+        </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div
+            class="max-w-[1000px] w-full grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900 rounded-xl overflow-hidden login-card">
+            <!-- Left Side: Branding/Visual -->
+            <div
+                class="hidden md:flex flex-col justify-center p-12 bg-primary/5 dark:bg-primary/10 border-r border-slate-100 dark:border-slate-800">
+                <div class="mb-8">
+                    <span class="material-symbols-outlined text-6xl text-primary">school</span>
+                </div>
+                <h1 class="text-4xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-4">
+                    Empowering Technical <br /><span class="text-primary">Excellence.</span>
+                </h1>
+                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-8">
+                    Access your personalized dashboard to manage examinations, track progress, and view certifications.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                        <span class="material-symbols-outlined text-primary">verified_user</span>
+                        <span class="text-sm font-medium">Secure Examination Environment</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                        <span class="material-symbols-outlined text-primary">analytics</span>
+                        <span class="text-sm font-medium">Real-time Performance Analytics</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Side: Login Form -->
+            <div class="p-8 md:p-12 flex flex-col justify-center">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Welcome Back</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Please select your role and enter your credentials.
+                    </p>
+                </div>
+                {% if error %}
+                <div class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm font-medium">{{
+                    error }}</div>
+                {% endif %}
+                {% if success %}
+                <div class="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm font-medium">
+                    {{ success }}</div>
+                {% endif %}
+                <!-- Role Toggle -->
+                <div class="flex p-1 mb-8 rounded-lg bg-slate-100 dark:bg-slate-800">
+                    <button
+                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                        id="studentBtn" onclick="switchRole('student')">
+                        <span class="material-symbols-outlined text-sm">person</span>
+                        Student
+                    </button>
+                    <button
+                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                        id="facultyBtn" onclick="switchRole('faculty')">
+                        <span class="material-symbols-outlined text-sm">badge</span>
+                        Faculty
+                    </button>
+                </div>
+                <!-- Student Login Form -->
+                <form id="studentForm" method="POST" action="/login/student" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Full
+                            Name</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                            <input name="student_name" required
+                                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                                placeholder="Enter your full name" type="text" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Registration
+                            Number</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">alternate_email</span>
+                            <input name="registration_number" required
+                                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                                placeholder="e.g. 2024-100234" type="text" />
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-primary text-white font-bold py-3.5 rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        type="submit">
+                        Sign In as Student
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </form>
+                <!-- Faculty Login Form -->
+                <form id="facultyForm" method="POST" action="/login/faculty" class="space-y-6 hidden">
+                    <div>
+                        <label
+                            class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Username</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">alternate_email</span>
+                            <input name="username" required
+                                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                                placeholder="faculty_username" type="text" />
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Password</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+                            <input name="password" required
+                                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                                placeholder="••••••••" type="password" />
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-primary text-white font-bold py-3.5 rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                        type="submit">
+                        Sign In as Faculty
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </form>
+                <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        New faculty?
+                        <a class="text-primary font-semibold hover:underline" href="/register/faculty">Register Here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Simple Footer -->
+    <footer class="p-6 text-center text-slate-400 text-xs">
+        <p>© 2024 Online Technical Examination System. All rights reserved.</p>
+    </footer>
+    <script>
+        function switchRole(role) {
+            const studentBtn = document.getElementById('studentBtn');
+            const facultyBtn = document.getElementById('facultyBtn');
+            const studentForm = document.getElementById('studentForm');
+            const facultyForm = document.getElementById('facultyForm');
+
+            if (role === 'student') {
+                studentBtn.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all bg-white dark:bg-slate-700 text-primary shadow-sm';
+                facultyBtn.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
+                studentForm.classList.remove('hidden');
+                facultyForm.classList.add('hidden');
+            } else {
+                facultyBtn.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all bg-white dark:bg-slate-700 text-primary shadow-sm';
+                studentBtn.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200';
+                facultyForm.classList.remove('hidden');
+                studentForm.classList.add('hidden');
+            }
+        }
+        // Default to student
+        switchRole('student');
+    </script>
+</body>
+
+</html>

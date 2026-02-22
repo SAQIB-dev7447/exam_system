@@ -1,0 +1,16 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # Pings every 10 minutes
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          # Replace YOUR_RENDER_URL with your actual Render deployment URL
+          # or set it as a GitHub secret for better security.
+          curl -s https://exam-system-demo.onrender.com/health

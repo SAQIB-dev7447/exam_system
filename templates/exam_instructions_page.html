@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exam Instructions | {{ exam.title }}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8", "background-dark": "#111621" },
+                    fontFamily: { "display": ["Inter"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <!-- Header Navigation -->
+    <header
+        class="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-primary text-white p-1.5 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">school</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Technical Examination System</h1>
+                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Exam Portal</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex flex-col items-end">
+                <span class="text-sm font-semibold">{{ student.student_name }}</span>
+                <span class="text-xs text-slate-500">Reg: {{ student.registration_number }}</span>
+            </div>
+            <div
+                class="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">person</span>
+            </div>
+            <a href="/logout"
+                class="flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <span class="material-symbols-outlined text-slate-500">logout</span>
+            </a>
+        </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+        <div
+            class="max-w-4xl w-full bg-white dark:bg-slate-900 shadow-xl rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <!-- Exam Title Banner -->
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-6 md:p-8 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                            {{ exam.title }}
+                        </h2>
+                        {% if exam.description %}
+                        <p class="text-slate-500 dark:text-slate-400 mt-1 font-medium italic">
+                            {{ exam.description }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 md:p-10 space-y-8">
+                <!-- Exam Meta Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                        <div class="h-12 w-12 rounded-lg bg-primary text-white flex items-center justify-center">
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wide">Duration</p>
+                            <p class="text-lg font-bold">{{ exam.duration_minutes }} Minutes</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                        <div class="h-12 w-12 rounded-lg bg-primary text-white flex items-center justify-center">
+                            <span class="material-symbols-outlined">grade</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wide">Total Marks</p>
+                            <p class="text-lg font-bold">{{ exam.total_marks }} Points</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                        <div class="h-12 w-12 rounded-lg bg-primary text-white flex items-center justify-center">
+                            <span class="material-symbols-outlined">quiz</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wide">Questions</p>
+                            <p class="text-lg font-bold">{{ question_count }} Items</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Instructions Section -->
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-primary">assignment</span>
+                            General Instructions
+                        </h3>
+                        <ul class="space-y-3 text-slate-600 dark:text-slate-300 leading-relaxed">
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>Ensure you have a stable internet connection throughout the exam.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>The exam will automatically submit once the timer reaches zero.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>You can navigate back and forth between questions using the 'Previous' and 'Next'
+                                    buttons.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>Click the "Submit" button only when you have completed all questions.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>Your answers are saved automatically when you select an option.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="text-primary font-bold">•</span>
+                                <span>Only one attempt is allowed per student. Once submitted, you cannot retake the
+                                    exam.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        class="p-5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <h3 class="text-lg font-bold flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-red-500">security</span>
+                            Important Rules
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-lg mt-0.5">lock</span>
+                                <p class="text-sm">Do not refresh or close the browser during the exam. Your progress is
+                                    saved but refreshing may cause delays.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-lg mt-0.5">wifi</span>
+                                <p class="text-sm">A stable internet connection is required for real-time answer saving.
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-lg mt-0.5">warning</span>
+                                <p class="text-sm">Attempting to access the exam with a different registration number
+                                    will be considered a violation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Agreement & Action -->
+                <div class="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center gap-6">
+                    <label class="group flex items-center gap-3 cursor-pointer select-none" id="agree-label">
+                        <input
+                            class="peer h-6 w-6 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer bg-white"
+                            type="checkbox" id="agree-checkbox" />
+                        <span
+                            class="text-slate-700 dark:text-slate-300 font-medium group-hover:text-primary transition-colors">
+                            I have read and understood all the instructions and rules.
+                        </span>
+                    </label>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <a href="/student/exams"
+                            class="px-10 py-4 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl hover:bg-slate-300 transition-colors text-center">
+                            Back to Exams
+                        </a>
+                        <form method="POST" action="/student/exam/{{ exam.id }}/start" id="start-form">
+                            <button type="submit" id="start-btn" disabled
+                                class="px-12 py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed w-full">
+                                Start Exam Now
+                                <span class="material-symbols-outlined">play_arrow</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="py-6 text-center text-slate-400 text-xs">
+        © 2024 Technical Examination System. All rights reserved.
+    </footer>
+    <script>
+        document.getElementById('agree-checkbox').addEventListener('change', function () {
+            document.getElementById('start-btn').disabled = !this.checked;
+        });
+    </script>
+</body>
+
+</html>

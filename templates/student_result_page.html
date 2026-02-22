@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Exam Result - {{ exam.title }}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light min-h-screen font-display text-slate-900">
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-primary text-white p-1.5 rounded-lg">
+                <span class="material-symbols-outlined text-2xl">school</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Technical Examination System</h1>
+                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Exam Result</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/student/exams"
+                class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary/90 transition">
+                Back to Exams
+            </a>
+            <a href="/logout" class="p-2 rounded-lg hover:bg-slate-100 transition"><span
+                    class="material-symbols-outlined text-slate-500">logout</span></a>
+        </div>
+    </header>
+    <main class="max-w-4xl mx-auto p-6 md:p-10 space-y-8">
+        <!-- Score Hero Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+            <div
+                class="p-8 md:p-12 text-center {% if passed %}bg-gradient-to-br from-emerald-50 to-green-50{% else %}bg-gradient-to-br from-red-50 to-orange-50{% endif %}">
+                <div class="mb-6">
+                    {% if passed %}
+                    <div class="w-20 h-20 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4">
+                        <span class="material-symbols-outlined text-5xl text-emerald-600">emoji_events</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-emerald-900">Congratulations!</h2>
+                    <p class="text-emerald-600 font-medium mt-1">You have passed the exam.</p>
+                    {% else %}
+                    <div class="w-20 h-20 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4">
+                        <span class="material-symbols-outlined text-5xl text-red-600">sentiment_dissatisfied</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-red-900">Keep Trying!</h2>
+                    <p class="text-red-600 font-medium mt-1">You did not pass this time. Minimum required: {{
+                        pass_percentage }}%.</p>
+                    {% endif %}
+                </div>
+                <div class="inline-flex items-baseline gap-1 mb-2">
+                    <span class="text-6xl font-black">{{ session.percentage|round(1) }}</span>
+                    <span class="text-2xl font-bold text-slate-400">%</span>
+                </div>
+                <p class="text-slate-500 font-medium">{{ session.score }}/{{ session.total_marks }} marks</p>
+            </div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100 bg-white">
+                <div class="p-6 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Correct</p>
+                    <p class="text-2xl font-black text-emerald-600">{{ correct_count }}</p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Wrong</p>
+                    <p class="text-2xl font-black text-red-600">{{ wrong_count }}</p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Unanswered</p>
+                    <p class="text-2xl font-black text-slate-400">{{ unanswered }}</p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Status</p>
+                    {% if passed %}
+                    <span
+                        class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">PASSED</span>
+                    {% else %}
+                    <span
+                        class="inline-block px-3 py-1 rounded-full bg-red-100 text-red-700 font-bold text-sm">FAILED</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Exam Info -->
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+            <h3 class="font-bold text-lg mb-4">{{ exam.title }}</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <p class="text-slate-500">Student</p>
+                    <p class="font-bold">{{ student.student_name }}</p>
+                </div>
+                <div>
+                    <p class="text-slate-500">Registration</p>
+                    <p class="font-bold">{{ student.registration_number }}</p>
+                </div>
+                <div>
+                    <p class="text-slate-500">Submitted</p>
+                    <p class="font-bold">{{ session.submitted_at[:19] if session.submitted_at else '--' }}</p>
+                </div>
+                <div>
+                    <p class="text-slate-500">Duration</p>
+                    <p class="font-bold">{{ exam.duration_minutes }} minutes</p>
+                </div>
+            </div>
+        </div>
+        <!-- Answer Review -->
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">fact_check</span>Detailed Answer Review
+                </h3>
+            </div>
+            <div class="divide-y divide-slate-100">
+                {% for q in questions %}
+                {% set answer = answers.get(q.id, {}) %}
+                {% set selected = answer.selected_option if answer else None %}
+                {% set is_correct = answer.is_correct if answer else False %}
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0
+{% if is_correct %}bg-emerald-100 text-emerald-700{% elif selected %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-400{% endif %}">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold mb-3">{{ q.question_text }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {% set options = [('A', q.option_a), ('B', q.option_b), ('C', q.option_c), ('D',
+                                q.option_d)] %}
+                                {% for letter, text in options %}
+                                <div class="flex items-center gap-3 p-3 rounded-lg text-sm
+{% if letter == q.correct_option %}bg-emerald-50 border border-emerald-200 text-emerald-800
+{% elif letter == selected and not is_correct %}bg-red-50 border border-red-200 text-red-800
+{% else %}bg-slate-50 border border-slate-100 text-slate-600{% endif %}">
+                                    <span class="font-bold">{{ letter }}.</span>
+                                    <span>{{ text }}</span>
+                                    {% if letter == q.correct_option %}
+                                    <span
+                                        class="material-symbols-outlined text-emerald-600 ml-auto text-lg">check_circle</span>
+                                    {% elif letter == selected and not is_correct %}
+                                    <span class="material-symbols-outlined text-red-600 ml-auto text-lg">cancel</span>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if not selected %}
+                            <p class="mt-2 text-xs text-slate-400 font-medium italic">Not answered</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    <footer class="py-6 text-center text-slate-400 text-xs">
+        © 2024 Technical Examination System. All rights reserved.
+    </footer>
+</body>
+
+</html>

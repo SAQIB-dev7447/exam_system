@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Live Monitoring - Technical Examination System</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light min-h-screen flex flex-col font-display text-slate-900">
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <a href="/faculty/dashboard" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div class="bg-primary text-white p-1.5 rounded-lg">
+                <span class="material-symbols-outlined text-xl">monitoring</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Live Monitoring</h1>
+                <p class="text-xs text-slate-500 font-medium">{{ exam.title }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
+                <span class="material-symbols-outlined text-red-600">timer</span>
+                <span class="text-red-600 font-bold font-mono" id="monitor-timer">--:--:--</span>
+            </div>
+            <form method="POST" action="/faculty/exams/{{ exam.id }}/stop"
+                onsubmit="return confirm('Are you sure you want to stop this exam? This cannot be undone.');">
+                <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">stop_circle</span>
+                    Emergency Stop
+                </button>
+            </form>
+        </div>
+    </header>
+    <main class="flex-grow max-w-6xl mx-auto w-full p-6 md:p-10">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Total Students</p>
+                        <h3 class="text-3xl font-bold">{{ total_students }}</h3>
+                    </div>
+                    <div class="size-12 rounded-lg bg-blue-50 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-[28px]">group</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Submissions</p>
+                        <h3 class="text-3xl font-bold text-emerald-600">{{ submitted }}</h3>
+                    </div>
+                    <div class="size-12 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <span class="material-symbols-outlined text-[28px]">task_alt</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 mb-1">In Progress</p>
+                        <h3 class="text-3xl font-bold text-orange-600">{{ in_progress }}</h3>
+                    </div>
+                    <div class="size-12 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
+                        <span class="material-symbols-outlined text-[28px]">edit_note</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Student List -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-lg font-bold">Student Activity</h3>
+                <button onclick="location.reload()"
+                    class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                    <span class="material-symbols-outlined text-lg">refresh</span> Refresh
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Student Name</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Registration No.</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Started At</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for s in sessions %}
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-semibold">{{ s.student_name }}</td>
+                            <td class="px-6 py-4 text-sm text-slate-600">{{ s.registration_number }}</td>
+                            <td class="px-6 py-4 text-sm text-slate-500">{{ s.started_at[:19] if s.started_at else '--'
+                                }}</td>
+                            <td class="px-6 py-4">
+                                {% if s.is_submitted %}
+                                <span
+                                    class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                                    <span class="size-1.5 rounded-full bg-emerald-500"></span> Submitted
+                                </span>
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                    <span class="size-1.5 rounded-full bg-blue-500"></span> In Progress
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not sessions %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-slate-400">No students have started the
+                                exam yet.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Monitor timer countdown
+        const remainingSeconds = {{ remaining_seconds }};
+        let timeLeft = remainingSeconds;
+        const timerEl = document.getElementById('monitor-timer');
+        function updateTimer() {
+            const h = Math.floor(timeLeft / 3600);
+            const m = Math.floor((timeLeft % 3600) / 60);
+            const s = timeLeft % 60;
+            timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            if (timeLeft <= 0) {
+                timerEl.textContent = 'ENDED';
+                return;
+            }
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+        updateTimer();
+        // Auto-refresh every 15 seconds
+        setInterval(() => location.reload(), 15000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Faculty Dashboard Overview</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Side Navigation Bar -->
+        <aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">school</span>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight leading-none">EduTech</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Faculty Portal</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 px-4 py-4 space-y-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors"
+                    href="/faculty/dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-semibold">Overview</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    href="/faculty/exams/create">
+                    <span class="material-symbols-outlined">assignment</span>
+                    <span class="text-sm font-medium">Create Exam</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-3 p-2">
+                    <div class="size-9 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-bold truncate">{{ faculty.full_name }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ faculty.department or 'Faculty' }}</p>
+                    </div>
+                    <a href="/logout" class="ml-auto text-slate-400 hover:text-slate-600">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Header Section -->
+            <header
+                class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold">Dashboard Overview</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="/faculty/exams/create"
+                        class="bg-primary text-white px-5 h-10 rounded-lg flex items-center gap-2 font-bold text-sm hover:bg-primary/90 transition-all shadow-sm shadow-primary/20">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                        Create New Exam
+                    </a>
+                </div>
+            </header>
+            <div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+                <!-- Statistics Cards -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Exams</p>
+                                <h3 class="text-3xl font-bold">{{ total_exams }}</h3>
+                            </div>
+                            <div
+                                class="size-12 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-[28px]">description</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-1.5">
+                            <span
+                                class="flex items-center text-xs font-bold text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded">
+                                Draft: {{ draft_exams }} | Active: {{ active_exams }} | Done: {{ completed_exams }}
+                            </span>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Active Exams</p>
+                                <h3 class="text-3xl font-bold">{{ active_exams }}</h3>
+                            </div>
+                            <div
+                                class="size-12 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
+                                <span class="material-symbols-outlined text-[28px]">timer</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-1.5">
+                            <span class="text-xs text-slate-400">Live right now</span>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Students
+                                </p>
+                                <h3 class="text-3xl font-bold">{{ total_students }}</h3>
+                            </div>
+                            <div
+                                class="size-12 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600">
+                                <span class="material-symbols-outlined text-[28px]">group</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-1.5">
+                            <span class="text-xs text-slate-400">Total attempts across all exams</span>
+                        </div>
+                    </div>
+                </section>
+                <!-- Table Section -->
+                <section
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div
+                        class="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold">Recent Exams</h3>
+                            <p class="text-sm text-slate-500 mt-1 font-medium">Manage and track your latest assessment
+                                activities.</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50">
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Exam Title</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Created</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Duration</th>
+                                    <th
+                                        class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                {% for exam in exams %}
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="size-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                                                <span class="material-symbols-outlined text-[18px]">assignment</span>
+                                            </div>
+                                            <span class="text-sm font-bold">{{ exam.title }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{{
+                                        exam.created_at[:10] if exam.created_at else '--' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if exam.status == 'active' %}
+                                        <span
+                                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                            <span class="size-1.5 rounded-full bg-emerald-500"></span> ACTIVE
+                                        </span>
+                                        {% elif exam.status == 'draft' %}
+                                        <span
+                                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                            <span class="size-1.5 rounded-full bg-amber-500"></span> DRAFT
+                                        </span>
+                                        {% else %}
+                                        <span
+                                            class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                            <span class="size-1.5 rounded-full bg-slate-400"></span> COMPLETED
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ exam.duration_minutes
+                                        }} min</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        {% if exam.status == 'draft' %}
+                                        <a href="/faculty/exams/{{ exam.id }}/questions"
+                                            class="text-slate-400 hover:text-primary p-1 inline-block"
+                                            title="Edit Questions">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        </a>
+                                        {% endif %}
+                                        {% if exam.status == 'active' %}
+                                        <a href="/faculty/exams/{{ exam.id }}/monitor"
+                                            class="text-slate-400 hover:text-primary p-1 inline-block" title="Monitor">
+                                            <span class="material-symbols-outlined text-[20px]">monitoring</span>
+                                        </a>
+                                        {% endif %}
+                                        {% if exam.status in ['active', 'completed'] %}
+                                        <a href="/faculty/exams/{{ exam.id }}/results"
+                                            class="text-slate-400 hover:text-primary p-1 inline-block" title="Results">
+                                            <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not exams %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-12 text-center text-slate-400">
+                                        No exams yet. Click "Create New Exam" to get started.
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

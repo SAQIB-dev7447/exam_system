@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project specific
+test_db.py
+test_ipv6.py
+test_postgresql.py
+schema.sql
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

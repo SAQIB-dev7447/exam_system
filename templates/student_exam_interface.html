@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{{ exam.title }} - Exam In Progress</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#2463eb", "background-light": "#f6f6f8" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light min-h-screen font-display text-slate-900">
+    <!-- Fixed Header with Timer -->
+    <header
+        class="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-primary text-white p-1.5 rounded-lg">
+                <span class="material-symbols-outlined text-xl">assignment</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-sm leading-tight">{{ exam.title }}</h1>
+                <p class="text-[11px] text-slate-500 font-medium">Q{{ current_q }}/{{ total_questions }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-lg" id="timer-box">
+                <span class="material-symbols-outlined text-lg" id="timer-icon">timer</span>
+                <span class="font-mono font-bold" id="timer-display">--:--:--</span>
+            </div>
+            <form method="POST" action="/student/exam/{{ exam.id }}/submit" id="submit-form"
+                onsubmit="return confirmSubmit()">
+                <button type="submit"
+                    class="bg-red-600 text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-red-700 transition flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">send</span>
+                    Submit Exam
+                </button>
+            </form>
+        </div>
+    </header>
+    <div class="flex h-[calc(100vh-73px)]">
+        <!-- Main Question Area -->
+        <main class="flex-1 overflow-y-auto p-8 md:p-12">
+            <div class="max-w-3xl mx-auto">
+                {% set q = questions[current_q - 1] %}
+                <!-- Question Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <span class="text-primary font-bold text-sm">Question {{ current_q }} of {{ total_questions
+                            }}</span>
+                        <span
+                            class="text-xs font-bold text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200">{{
+                            q.marks }} Mark(s)</span>
+                    </div>
+                    <div class="p-8">
+                        <h2 class="text-xl font-bold text-slate-900 leading-relaxed mb-8">{{ q.question_text }}</h2>
+                        <div class="space-y-4" id="options-area">
+                            {% set options = [('A', q.option_a), ('B', q.option_b), ('C', q.option_c), ('D',
+                            q.option_d)] %}
+                            {% for letter, text in options %}
+                            <label
+                                class="flex items-center gap-4 p-5 rounded-xl border-2 cursor-pointer transition-all
+{% if answers.get(q.id) == letter %}border-primary bg-primary/5{% else %}border-slate-100 hover:border-slate-300 hover:bg-slate-50{% endif %}"
+                                data-option="{{ letter }}" data-question="{{ q.id }}">
+                                <div
+                                    class="w-9 h-9 rounded-full border-2 flex items-center justify-center font-bold text-sm
+{% if answers.get(q.id) == letter %}border-primary bg-primary text-white{% else %}border-slate-300 text-slate-400{% endif %}">
+                                    {{ letter }}
+                                </div>
+                                <span class="text-base font-medium flex-1">{{ text }}</span>
+                                {% if answers.get(q.id) == letter %}
+                                <span class="material-symbols-outlined text-primary">check_circle</span>
+                                {% endif %}
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Navigation -->
+                <div class="flex items-center justify-between mt-8">
+                    {% if current_q > 1 %}
+                    <a href="/student/exam/{{ exam.id }}/attempt?q={{ current_q - 1 }}"
+                        class="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition flex items-center gap-2">
+                        <span class="material-symbols-outlined">arrow_back</span> Previous
+                    </a>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+                    {% if current_q < total_questions %} <a
+                        href="/student/exam/{{ exam.id }}/attempt?q={{ current_q + 1 }}"
+                        class="px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition flex items-center gap-2 shadow-lg shadow-primary/20">
+                        Next <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                        {% else %}
+                        <button
+                            onclick="document.getElementById('submit-form').dispatchEvent(new Event('submit', {cancelable: true}))"
+                            class="px-6 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition flex items-center gap-2">
+                            Finish & Submit <span class="material-symbols-outlined">check</span>
+                        </button>
+                        {% endif %}
+                </div>
+            </div>
+        </main>
+        <!-- Right Sidebar: Question Palette -->
+        <aside
+            class="hidden lg:flex w-72 border-l border-slate-200 bg-white flex-col sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
+            <div class="p-6">
+                <h3 class="font-bold text-sm text-slate-700 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg text-primary">grid_view</span>
+                    Question Palette
+                </h3>
+                <div class="grid grid-cols-5 gap-2 mb-8">
+                    {% for q in questions %}
+                    <a href="/student/exam/{{ exam.id }}/attempt?q={{ loop.index }}" class="aspect-square rounded-lg flex items-center justify-center text-xs font-bold border-2 transition-all
+{% if loop.index == current_q %}border-primary bg-primary text-white
+{% elif answers.get(q.id) %}border-emerald-400 bg-emerald-50 text-emerald-700
+{% else %}border-slate-200 bg-slate-50 text-slate-500 hover:border-primary{% endif %}">
+                        {{ loop.index }}
+                    </a>
+                    {% endfor %}
+                </div>
+                <!-- Legend -->
+                <div class="space-y-3 text-xs font-medium text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded border-2 border-primary bg-primary"></div> Current
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded border-2 border-emerald-400 bg-emerald-50"></div> Answered
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded border-2 border-slate-200 bg-slate-50"></div> Not Answered
+                    </div>
+                </div>
+                <!-- Stats -->
+                <div class="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Answered</span>
+                        <span class="font-bold text-emerald-600">{{ answers|length }}/{{ total_questions }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Remaining</span>
+                        <span class="font-bold text-orange-600">{{ total_questions - answers|length }}</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+    <script>
+        // Timer
+        const remainingSeconds = {{ remaining_seconds }};
+        let timeLeft = remainingSeconds;
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBox = document.getElementById('timer-box');
+        const timerIcon = document.getElementById('timer-icon');
+
+        function updateTimer() {
+            const h = Math.floor(timeLeft / 3600);
+            const m = Math.floor((timeLeft % 3600) / 60);
+            const s = timeLeft % 60;
+            timerDisplay.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+            if (timeLeft <= 300) {
+                timerBox.className = 'flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 text-red-700';
+            } else {
+                timerBox.className = 'flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700';
+            }
+
+            if (timeLeft <= 0) {
+                window.location.href = '/student/exam/{{ exam.id }}/submit?auto=1';
+                return;
+            }
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+        updateTimer();
+
+        // Save answer via AJAX
+        document.querySelectorAll('[data-option]').forEach(label => {
+            label.addEventListener('click', async function () {
+                const questionId = this.dataset.question;
+                const option = this.dataset.option;
+
+                try {
+                    const resp = await fetch('/student/exam/{{ exam.id }}/save-answer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question_id: questionId, selected_option: option })
+                    });
+                    const data = await resp.json();
+                    if (data.status === 'saved') {
+                        // Update UI: highlight selected, remove from others
+                        const optionsArea = this.closest('#options-area') || this.parentElement;
+                        optionsArea.querySelectorAll('[data-option]').forEach(lbl => {
+                            lbl.className = lbl.className.replace(/border-primary bg-primary\/5/g, 'border-slate-100 hover:border-slate-300 hover:bg-slate-50');
+                            const circle = lbl.querySelector('div');
+                            circle.className = circle.className.replace(/border-primary bg-primary text-white/g, 'border-slate-300 text-slate-400');
+                            const check = lbl.querySelector('.material-symbols-outlined');
+                            if (check) check.remove();
+                        });
+                        this.className = this.className.replace(/border-slate-100 hover:border-slate-300 hover:bg-slate-50/g, 'border-primary bg-primary/5');
+                        const myCircle = this.querySelector('div');
+                        myCircle.className = myCircle.className.replace(/border-slate-300 text-slate-400/g, 'border-primary bg-primary text-white');
+                        const checkSpan = document.createElement('span');
+                        checkSpan.className = 'material-symbols-outlined text-primary';
+                        checkSpan.textContent = 'check_circle';
+                        this.appendChild(checkSpan);
+                    }
+                } catch (e) {
+                    console.error('Save failed:', e);
+                }
+            });
+        });
+
+        // Confirm submit
+        function confirmSubmit() {
+            const answered = {{ answers| length
+        }};
+        const total = {{ total_questions }};
+        const unanswered = total - answered;
+        let msg = 'Are you sure you want to submit the exam?';
+        if (unanswered > 0) {
+            msg = `You have ${unanswered} unanswered question(s). Are you sure you want to submit?`;
+        }
+        return confirm(msg);
+}
+
+        // Beforeunload guard
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    </script>
+</body>
+
+</html>
